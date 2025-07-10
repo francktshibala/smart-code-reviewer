@@ -147,7 +147,7 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
       <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+            <div className="p-2 test-gradient rounded-lg">
               <Code className="w-8 h-8 text-white" />
             </div>
             <div>
