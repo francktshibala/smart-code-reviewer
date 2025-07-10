@@ -128,29 +128,33 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return 'text-red-600 bg-red-50';
-      case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'high': return 'text-red-700 bg-gradient-to-r from-red-100 to-red-200 border border-red-300';
+      case 'medium': return 'text-amber-700 bg-gradient-to-r from-amber-100 to-amber-200 border border-amber-300';
+      case 'low': return 'text-emerald-700 bg-gradient-to-r from-emerald-100 to-emerald-200 border border-emerald-300';
+      default: return 'text-slate-700 bg-gradient-to-r from-slate-100 to-slate-200 border border-slate-300';
     }
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
+    if (score >= 80) return 'text-emerald-600';
+    if (score >= 60) return 'text-amber-600';
     return 'text-red-600';
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center space-x-3">
-            <Code className="w-8 h-8 text-blue-600" />
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+              <Code className="w-8 h-8 text-white" />
+            </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Smart Code Reviewer</h1>
-              <p className="text-gray-600">AI-powered code analysis and suggestions</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Smart Code Reviewer
+              </h1>
+              <p className="text-slate-600 font-medium">AI-powered code analysis and suggestions</p>
             </div>
           </div>
         </div>
@@ -163,17 +167,19 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 transform ${
               isDragging
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? 'border-blue-400 bg-blue-50 scale-105 shadow-lg'
+                : 'border-slate-300 hover:border-blue-400 hover:shadow-md hover:scale-102 bg-white/50'
             }`}
           >
-            <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-fit mx-auto mb-4">
+              <Upload className="w-12 h-12 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">
               Upload your code file
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-slate-600 mb-6">
               Drag and drop a file here, or click to browse
             </p>
             <input
@@ -185,11 +191,11 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
             />
             <label
               htmlFor="file-upload"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Choose File
             </label>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-slate-500 mt-4">
               Supported: TypeScript, JavaScript, Python, Java, Go, Rust (max 1MB)
             </p>
           </div>
@@ -197,85 +203,91 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 border border-red-200 rounded-md bg-red-50">
+          <div className="mb-6 p-4 border border-red-200 rounded-xl bg-red-50/80 backdrop-blur-sm shadow-lg animate-pulse">
             <div className="flex items-center">
               <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
-              <span className="text-red-700">{error}</span>
+              <span className="text-red-700 font-medium">{error}</span>
             </div>
           </div>
         )}
 
         {/* Loading State */}
         {isAnalyzing && (
-          <div className="mb-6 p-6 border border-blue-200 rounded-md bg-blue-50">
+          <div className="mb-6 p-6 border border-blue-200 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg">
             <div className="flex items-center mb-4">
-              <Clock className="w-5 h-5 text-blue-500 mr-2" />
-              <span className="text-blue-700 font-medium">Analyzing code...</span>
+              <div className="animate-spin p-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-blue-700 font-semibold ml-3">Analyzing code...</span>
             </div>
-            <div className="w-full bg-blue-200 rounded-full h-2">
+            <div className="w-full bg-blue-200 rounded-full h-3 overflow-hidden">
               <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-sm text-blue-600 mt-2">{progress}% complete</p>
+            <p className="text-sm text-blue-600 mt-2 font-medium">{progress}% complete</p>
           </div>
         )}
 
         {/* Results */}
         {result && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             {/* Score Card */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-blue-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <FileText className="w-6 h-6 text-gray-600" />
+                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-xl font-bold text-slate-800">
                       {result.fileName}
                     </h2>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-slate-600 font-medium">
                       {getLanguageIcon(file?.language || 'javascript')} {file?.language}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-3xl font-bold ${getScoreColor(result.score)}`}>
+                  <div className={`text-4xl font-bold ${getScoreColor(result.score)} bg-gradient-to-r from-current to-current bg-clip-text`}>
                     {result.score}/100
                   </div>
-                  <div className="text-sm text-gray-600">Quality Score</div>
+                  <div className="text-sm text-slate-600 font-medium">Quality Score</div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-gray-900">{result.metrics.linesOfCode}</div>
-                  <div className="text-sm text-gray-600">Lines of Code</div>
+                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <div className="text-2xl font-bold text-blue-700">{result.metrics.linesOfCode}</div>
+                  <div className="text-sm text-blue-600 font-medium">Lines of Code</div>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-gray-900">{result.metrics.complexity}</div>
-                  <div className="text-sm text-gray-600">Complexity</div>
+                <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <div className="text-2xl font-bold text-purple-700">{result.metrics.complexity}</div>
+                  <div className="text-sm text-purple-600 font-medium">Complexity</div>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-gray-900">{result.metrics.maintainabilityIndex}</div>
-                  <div className="text-sm text-gray-600">Maintainability</div>
+                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <div className="text-2xl font-bold text-green-700">{result.metrics.maintainabilityIndex}</div>
+                  <div className="text-sm text-green-600 font-medium">Maintainability</div>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-gray-900">{result.metrics.functions}</div>
-                  <div className="text-sm text-gray-600">Functions</div>
+                <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg hover:shadow-md transition-all duration-200 transform hover:scale-105">
+                  <div className="text-2xl font-bold text-indigo-700">{result.metrics.functions}</div>
+                  <div className="text-sm text-indigo-600 font-medium">Functions</div>
                 </div>
               </div>
             </div>
 
             {/* Suggestions */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <BarChart3 className="w-5 h-5 mr-2" />
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-blue-100 p-6 hover:shadow-xl transition-all duration-300">
+              <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg mr-3">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
                 Suggestions ({result.suggestions.length})
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {result.suggestions.map((suggestion, index) => (
-                  <div key={index} className="border rounded-md p-4">
+                  <div key={index} className="border border-slate-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all duration-200 transform hover:scale-[1.01] bg-gradient-to-r from-white to-slate-50">
                     <div className="flex items-start space-x-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(suggestion.severity)}`}>
                         {suggestion.severity}
@@ -306,14 +318,16 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
 
             {/* Issues */}
             {result.issues.length > 0 && (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <AlertCircle className="w-5 h-5 mr-2" />
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-red-100 p-6 hover:shadow-xl transition-all duration-300">
+                <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
+                  <div className="p-2 bg-gradient-to-r from-red-500 to-orange-600 rounded-lg mr-3">
+                    <AlertCircle className="w-5 h-5 text-white" />
+                  </div>
                   Issues ({result.issues.length})
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {result.issues.map((issue, index) => (
-                    <div key={index} className="border rounded-md p-4">
+                    <div key={index} className="border border-red-200 rounded-lg p-4 hover:shadow-md hover:border-red-300 transition-all duration-200 transform hover:scale-[1.01] bg-gradient-to-r from-red-50 to-orange-50">
                       <div className="flex items-start space-x-3">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getSeverityColor(issue.severity)}`}>
                           {issue.severity}
@@ -339,14 +353,19 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
             )}
 
             {/* Export Report */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Export Report</h3>
-              <p className="text-gray-600 mb-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-green-100 p-6 hover:shadow-xl transition-all duration-300">
+              <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg mr-3">
+                  <Download className="w-5 h-5 text-white" />
+                </div>
+                Export Report
+              </h3>
+              <p className="text-slate-600 mb-6 font-medium">
                 Download a comprehensive analysis report in Markdown format.
               </p>
               <button
                 onClick={downloadReport}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download Report
