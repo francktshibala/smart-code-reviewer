@@ -44,7 +44,7 @@ This project was created for CSE 310 to demonstrate mastery of TypeScript while 
 ### Installation Steps
 ```bash
 # Clone the repository
-git clone https://github.com/francoisthibala/smart-code-reviewer.git
+git clone https://github.com/francktshibala/smart-code-reviewer
 cd smart-code-reviewer
 
 # Install dependencies
@@ -118,9 +118,9 @@ The video demonstrates:
 
 ## Contact
 **Francois Tshibala**
-- GitHub: [@francoistshibala](https://github.com/francoisthibala)
+- GitHub: [@francoistshibala](https://github.com/francktshibala)
 - Email: ftshibala@byui.edu
-- LinkedIn: [Francois Tshibala](https://linkedin.com/in/francois-tshibala)
+- LinkedIn: [Francois Tshibala](https://www.linkedin.com/feed/)
 
 ## Acknowledgments
 - CSE 310 course materials and instruction
