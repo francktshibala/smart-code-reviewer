@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: smart-code-reviewer-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+
+  - type: web  
+    name: smart-code-reviewer-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: false
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://smart-code-reviewer-backend.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

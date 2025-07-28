@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:production": "NODE_ENV=production npm run build",
+    "deploy:vercel": "./scripts/deploy.sh vercel",
+    "deploy:railway": "./scripts/deploy.sh railway",
+    "deploy:render": "./scripts/deploy.sh render",
+    "deploy:docker": "./scripts/deploy.sh docker"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -22,6 +22,8 @@ model User {
   projects     Project[]
   
   @@map("users")
+  @@index([email])
+  @@index([createdAt])
 }
 
 model Project {
@@ -37,6 +39,9 @@ model Project {
   analyses    Analysis[]
   
   @@map("projects")
+  @@index([userId])
+  @@index([createdAt])
+  @@index([userId, createdAt])
 }
 
 model Analysis {
@@ -52,4 +57,10 @@ model Analysis {
   project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   
   @@map("analyses")
+  @@index([projectId])
+  @@index([language])
+  @@index([score])
+  @@index([createdAt])
+  @@index([projectId, createdAt])
+  @@index([language, createdAt])
 }

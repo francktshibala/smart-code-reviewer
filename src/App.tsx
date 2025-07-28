@@ -1,19 +1,53 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, FileText, AlertCircle, Download, BarChart3, Code, Clock } from 'lucide-react';
+import { Upload, FileText, AlertCircle, Download, BarChart3, Code, Clock, LogIn, Save } from 'lucide-react';
 import type { CodeFile, AnalysisResult } from './services/types';
 import { CodeAnalysisService } from './services/CodeAnalysisService';
 import { createCodeFile, validateFile } from './utils/fileHandlers';
 import { getLanguageIcon } from './utils/languageDetection';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthModal } from './components/AuthModal';
+import { UserMenu } from './components/UserMenu';
+import { Dashboard } from './components/Dashboard';
+import { useProjects } from './hooks/useProjects';
+import { useAnalysisSaver } from './hooks/useAnalysisSaver';
 
-function App() {
+function AppContent() {
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [file, setFile] = useState<CodeFile | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [currentPage, setCurrentPage] = useState<'analyzer' | 'dashboard'>('analyzer');
 
   const analysisService = CodeAnalysisService.getInstance();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { defaultProject, isLoading: projectsLoading } = useProjects();
+  const { saveAnalysis, isSaving, saveError, lastSavedAnalysis, clearSaveError, clearLastSaved } = useAnalysisSaver();
+
+  const openAuthModal = (mode: 'login' | 'register') => {
+    setAuthMode(mode);
+    setShowAuthModal(true);
+  };
+
+  const handleSaveAnalysis = async () => {
+    if (!result || !file || !defaultProject) {
+      setError('Cannot save: missing analysis result, file, or project');
+      return;
+    }
+
+    clearSaveError();
+    const savedAnalysis = await saveAnalysis(result, file, defaultProject.id);
+    
+    if (savedAnalysis) {
+      // Show success message briefly
+      setTimeout(() => {
+        console.log('Analysis saved successfully:', savedAnalysis);
+      }, 100);
+    }
+  };
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -146,21 +180,82 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 test-gradient rounded-lg">
-              <Code className="w-8 h-8 text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 test-gradient rounded-lg">
+                <Code className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Smart Code Reviewer
+                </h1>
+                <p className="text-slate-600 font-medium">AI-powered code analysis and suggestions</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Smart Code Reviewer
-              </h1>
-              <p className="text-slate-600 font-medium">AI-powered code analysis and suggestions</p>
+
+            {/* Authentication section */}
+            <div className="flex items-center space-x-4">
+              {authLoading ? (
+                <div className="animate-pulse bg-gray-200 rounded-lg h-10 w-24"></div>
+              ) : isAuthenticated ? (
+                <UserMenu onNavigate={setCurrentPage} />
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => openAuthModal('login')}
+                    className="px-4 py-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => openAuthModal('register')}
+                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Breadcrumb Navigation */}
+      {isAuthenticated && (
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <nav className="flex items-center space-x-2 text-sm">
+            <button
+              onClick={() => setCurrentPage('analyzer')}
+              className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
+                currentPage === 'analyzer' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <Code className="w-4 h-4" />
+              <span>Code Analyzer</span>
+            </button>
+            <span className="text-gray-400">•</span>
+            <button
+              onClick={() => setCurrentPage('dashboard')}
+              className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
+                currentPage === 'dashboard' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Dashboard</span>
+            </button>
+          </nav>
+        </div>
+      )}
+
+      {/* Main Content */}
+      {currentPage === 'dashboard' && isAuthenticated ? (
+        <Dashboard />
+      ) : (
+        <div className="max-w-7xl mx-auto px-4 py-8">
         {/* File Upload Zone */}
         <div className="mb-8">
           <div
@@ -207,6 +302,44 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
             <div className="flex items-center">
               <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
               <span className="text-red-700 font-medium">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Save Error Message */}
+        {saveError && (
+          <div className="mb-6 p-4 border border-red-200 rounded-xl bg-red-50/80 backdrop-blur-sm shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <span className="text-red-700 font-medium">Save Error: {saveError}</span>
+              </div>
+              <button
+                onClick={clearSaveError}
+                className="text-red-500 hover:text-red-700 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Save Success Message */}
+        {lastSavedAnalysis && (
+          <div className="mb-6 p-4 border border-green-200 rounded-xl bg-green-50/80 backdrop-blur-sm shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Save className="w-5 h-5 text-green-500 mr-2" />
+                <span className="text-green-700 font-medium">
+                  Analysis saved to "{lastSavedAnalysis.project.name}" successfully!
+                </span>
+              </div>
+              <button
+                onClick={clearLastSaved}
+                className="text-green-500 hover:text-green-700 transition-colors"
+              >
+                ×
+              </button>
             </div>
           </div>
         )}
@@ -358,23 +491,70 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
                 <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg mr-3">
                   <Download className="w-5 h-5 text-white" />
                 </div>
-                Export Report
+                Export & Save
               </h3>
               <p className="text-slate-600 mb-6 font-medium">
-                Download a comprehensive analysis report in Markdown format.
+                Download a comprehensive analysis report or save to your account.
               </p>
-              <button
-                onClick={downloadReport}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Report
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={downloadReport}
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Report
+                </button>
+                
+                {isAuthenticated ? (
+                  <button
+                    onClick={handleSaveAnalysis}
+                    disabled={isSaving || projectsLoading || !defaultProject}
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save to {defaultProject?.name || 'Account'}
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => openAuthModal('register')}
+                    className="inline-flex items-center px-6 py-3 border border-blue-200 text-sm font-semibold rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition-all duration-200 transform hover:scale-105"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Sign Up to Save
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
-      </div>
+        </div>
+      )}
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode={authMode}
+      />
     </div>
+  );
+}
+
+// Main App component with AuthProvider
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
