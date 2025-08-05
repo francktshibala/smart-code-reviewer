@@ -69,3 +69,7 @@ backend/prisma/migrations/
 .cache/
 .parcel-cache/
 .eslintcache
+
+# Internal documentation files
+docs/MODULE_2_SUBMIT.md
+docs/first_module.md
