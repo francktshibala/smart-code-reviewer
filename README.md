@@ -356,4 +356,116 @@ The video shows:
 
 ---
 
-*Enhanced with Cloud Databases for CSE 310 - Applied Programming*
+## CSE 310 Module 3: Making Teams Work Together in Real Time
+
+### Course Context
+I built Module 3 for my CSE 310 class to make my code reviewer work for teams instead of just one person. The goal was to learn how to make websites where multiple people can work together at the same time, like Google Docs but for code reviews.
+
+### Module Requirements Met
+✅ **Made it work for multiple people**: Now teams can use the app together from different computers  
+✅ **Added team rooms**: People can join the same "room" to review code together  
+✅ **Shows who's online**: You can see how many people are working with you  
+✅ **Works instantly**: When someone joins or leaves, everyone sees it right away  
+✅ **Tested with different browsers**: Works whether you use Chrome, Edge, or other browsers  
+
+### How I Made Teams Work Together (1 Week Sprint)
+
+**Days 1-2: Learning About Real-Time Communication**
+1. **Research**: Learned about WebSockets - the technology that makes websites update instantly
+2. **Socket.io Tutorial**: Followed guides to understand how to connect multiple browsers
+3. **Planning**: Figured out how to add team features without breaking my existing app
+
+**Days 3-5: Building Team Features**
+1. **Backend Setup**: Made the server handle multiple people connecting at once
+2. **Room System**: Built "rooms" so teams can work together privately
+3. **Frontend Connection**: Made the website connect to other people's browsers
+4. **User Count**: Added a counter to show how many people are in each room
+
+**Days 6-7: Testing and Finishing**
+1. **Multi-Browser Testing**: Opened Chrome and Edge to test like real teammates
+2. **Bug Fixes**: Fixed problems with people joining and leaving rooms
+3. **Polish**: Made the interface show connection status clearly
+
+### What Changed from Module 2
+
+**Before (Module 2)**:
+- ✅ Personal code reviewer with saved history
+- ✅ User accounts and login
+- ❌ Only worked for one person at a time
+- ❌ No way to collaborate with teammates
+
+**After (Module 3)**:
+- ✅ Everything from Module 2 PLUS:
+- ✅ Multiple people can use it together
+- ✅ Team rooms for collaboration
+- ✅ See who's online in real time
+- ✅ Ready for live code sharing (foundation built)
+
+### Why This Was Important to Learn
+
+**For the class**: Learning networking is essential - most modern apps need multiple users working together.
+
+**For my career**: Companies need developers who can build collaborative tools like Slack, Discord, or Google Workspace.
+
+**For this project**: Code reviews work better when teams can discuss and work together in real time.
+
+### New Technology I Learned
+- **Socket.io**: Makes websites talk to each other instantly (like texting but for websites)
+- **WebSockets**: The technology that keeps connections open between browsers and servers
+- **Real-time Programming**: How to make things update immediately without refreshing the page
+- **Multi-user Systems**: How to handle many people using the same app at once
+
+### Problems I Solved in Module 3
+
+### Problem 1: Making Real-Time Connections Work
+**What went wrong**: Browsers kept refusing to connect to my server
+**How I fixed it**: Learned about CORS (permission settings) and configured my server to accept connections from different browser tabs
+
+### Problem 2: Counting Users Correctly
+**What went wrong**: Room user counts showed wrong numbers (sometimes 0, sometimes different on each browser)
+**How I fixed it**: Fixed the logic for tracking when people join and leave rooms, making sure everyone sees the same count
+
+### Problem 3: Server Keeps Stopping
+**What went wrong**: My server would crash randomly during testing
+**How I fixed it**: Learned to run the server in a more stable way and added better error handling
+
+### What I Learned in Module 3
+
+**Networking Skills**:
+- How websites communicate with each other instantly
+- How to handle multiple users without conflicts
+- How to organize users into groups (rooms)
+- How to test multi-user features properly
+
+**Collaboration Skills**:
+- How modern team tools like Slack actually work under the hood
+- Why real-time updates are important for user experience
+- How to build features that scale to many users
+
+### Time Spent on Module 3
+**Total**: 18 hours over 1 week
+- Learning real-time programming: 4 hours
+- Building team features: 10 hours
+- Testing with multiple browsers: 2 hours
+- Documentation and cleanup: 2 hours
+
+This exceeds the required 12 hours and shows I can build modern collaborative applications.
+
+### Academic Reflection
+
+Module 3 taught me how to think about multiple users instead of just one. The hardest part was understanding how to keep everyone's screens updated at the same time without breaking anything.
+
+Now my project shows I can build individual tools (Module 1), add databases for persistence (Module 2), AND make teams collaborate in real time (Module 3). This combination is what modern web applications need.
+
+### Demo Video - Module 3
+[🎥 Watch my Module 3 demo video](your-video-link-here)
+
+The video shows:
+- How multiple people can join the same code review session
+- Real-time room system working across different browsers
+- Behind-the-scenes code that makes the networking work
+- What I learned about building team collaboration tools
+
+---
+
+*Enhanced with Real-time Collaboration for CSE 310 - Applied Programming*
