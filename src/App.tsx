@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Upload, FileText, AlertCircle, Download, BarChart3, Code, Clock, LogIn, Save } from 'lucide-react';
+import { io, Socket } from 'socket.io-client';
 import type { CodeFile, AnalysisResult } from './services/types';
 import { CodeAnalysisService } from './services/CodeAnalysisService';
 import { createCodeFile, validateFile } from './utils/fileHandlers';
@@ -21,11 +22,57 @@ function AppContent() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [currentPage, setCurrentPage] = useState<'analyzer' | 'dashboard'>('analyzer');
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [currentRoom, setCurrentRoom] = useState<string>('');
+  const [roomUsers, setRoomUsers] = useState<string[]>([]);
 
   const analysisService = CodeAnalysisService.getInstance();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { defaultProject, isLoading: projectsLoading } = useProjects();
   const { saveAnalysis, isSaving, saveError, lastSavedAnalysis, clearSaveError, clearLastSaved } = useAnalysisSaver();
+
+  // Socket.io connection setup
+  useEffect(() => {
+    const newSocket = io('http://localhost:3001');
+    
+    newSocket.on('connect', () => {
+      console.log('Connected to server:', newSocket.id);
+    });
+
+    newSocket.on('disconnect', () => {
+      console.log('Disconnected from server');
+    });
+
+    // Room event handlers
+    newSocket.on('room_update', ({ roomId, userCount }) => {
+      console.log(`Room ${roomId} now has ${userCount} users`);
+      setRoomUsers(new Array(userCount).fill('user')); // Show total user count
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
+
+  // Room management functions
+  const joinRoom = (roomId: string) => {
+    if (socket && roomId.trim()) {
+      socket.emit('join_room', roomId);
+      setCurrentRoom(roomId);
+      console.log(`Joining room: ${roomId}`);
+    }
+  };
+
+  const leaveRoom = () => {
+    if (socket && currentRoom) {
+      socket.emit('leave_room', currentRoom);
+      setCurrentRoom('');
+      setRoomUsers([]);
+      console.log(`Left room: ${currentRoom}`);
+    }
+  };
 
   const openAuthModal = (mode: 'login' | 'register') => {
     setAuthMode(mode);
@@ -193,8 +240,57 @@ ${result.issues.map(i => `- **${i.type.toUpperCase()}** (${i.severity}): ${i.mes
               </div>
             </div>
 
-            {/* Authentication section */}
+            {/* Room and Authentication section */}
             <div className="flex items-center space-x-4">
+              {/* Room Controls */}
+              <div className="flex items-center space-x-2">
+                {currentRoom ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
+                      Room: {currentRoom} ({roomUsers.length} users)
+                    </div>
+                    <button
+                      onClick={leaveRoom}
+                      className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200 transition-colors"
+                    >
+                      Leave
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Enter room ID"
+                      className="px-3 py-1 text-sm border rounded"
+                      id="room-input"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          const value = (e.target as HTMLInputElement).value.trim();
+                          if (value) {
+                            joinRoom(value);
+                            (e.target as HTMLInputElement).value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        const input = document.getElementById('room-input') as HTMLInputElement;
+                        const value = input?.value?.trim();
+                        if (value) {
+                          joinRoom(value);
+                          input.value = '';
+                        }
+                      }}
+                      className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded hover:bg-blue-200 transition-colors"
+                    >
+                      Join Room
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Authentication section */}
               {authLoading ? (
                 <div className="animate-pulse bg-gray-200 rounded-lg h-10 w-24"></div>
               ) : isAuthenticated ? (
